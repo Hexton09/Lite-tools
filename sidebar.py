@@ -9,7 +9,7 @@ def show_sidebar():
             <style>
             /* Force the button to be compact */
             [data-testid="stSidebar"] div.stButton > button {
-                min-height: 40px !important; /* Shrinks the vertical size */
+                min-height: 40px !important;
                 height: 40px !important;
                 width: 100% !important;
                 justify-content: flex-start !important;
@@ -47,4 +47,11 @@ def show_sidebar():
             st.switch_page("pages/4_youtube_tools.py")
             
         st.write("---")
+        
+        # Developed by link
+        st.markdown(
+            "Developed by [Hexton](https://github.com/Hexton09)", 
+            unsafe_allow_html=True
+        )
+        
         st.caption("Universal Utility Suite © 2026")

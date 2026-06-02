@@ -85,7 +85,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h1 class='title-text'>🛠️ Universal Utility Suite</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='title-text'>🛠️ Universal Utility Suite (Lite tools</h1>", unsafe_allow_html=True)
 st.markdown("<h4 class='subtitle-text'>Fast, private, in-memory processing. Select a toolkit below to get started.</h4>", unsafe_allow_html=True)
 
 # --- Tile Layout (2x2 Grid) ---
