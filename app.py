@@ -3,7 +3,7 @@ import streamlit as st
 from sidebar import show_sidebar
 show_sidebar()
 
-st.set_page_config(page_title="Universal Utility Suite", page_icon="🛠️", layout="centered")
+st.set_page_config(page_title="Universal Utility Suite (Lite tools)", page_icon="🛠️", layout="centered")
 
 # --- Custom CSS for Bulletproof Color-Coded Tile Buttons ---
 st.markdown("""
