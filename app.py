@@ -102,5 +102,5 @@ with col2:
     if st.button("🖼️\n\n**Image Tools**\n\nBatch resize, compress, and convert image formats easily.", use_container_width=True):
         st.switch_page("pages/2_image_tools.py")
         
-    if st.button("🔻\n\n**Media Downloader**\n\nExtract high-quality video or audio directly from YouTube.", use_container_width=True):
+    if st.button("🔻\n\n**Media Downloader**\n\nExtract high-quality video or audio directly from YouTube and Instagram.", use_container_width=True):
         st.switch_page("pages/4_youtube_tools.py")
