@@ -95,9 +95,13 @@ with pdf_tabs[0]:
             orig = comp_file.getvalue()
             reader = PdfReader(io.BytesIO(orig))
             writer = PdfWriter()
+            
             for p in reader.pages: 
-                p.compress_content_streams()
-                writer.add_page(p)
+                # FIX: Add target page tracking layer to writer first to generate editing authorization
+                new_page = writer.add_page(p)
+                # Compress content stream inside writer memory matrix safely
+                new_page.compress_content_streams()
+                
             out = io.BytesIO()
             writer.write(out)
             new_b = out.getvalue()
