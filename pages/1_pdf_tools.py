@@ -89,25 +89,61 @@ with pdf_tabs[0]:
                     st.download_button(f"Download Page {i+1} ({get_file_size(img_d)})", img_d, f"page_{i+1}.jpg", key=f"dl_p2j_{i}")
 
     with col_tools[2]:
-        st.header("Lossless Compressor")
+        st.header("PDF Compressor")
+        
+        comp_mode = st.radio("Compression Strategy", [
+            "Lossless (Safe, clears junk data, keeps text searchable)", 
+            "Lossy (Aggressive, forces smaller size, converts to images)"
+        ])
+        
+        if "Lossy" in comp_mode:
+            st.markdown("### Compression Level")
+            lossy_level = st.select_slider(
+                "Select how much you want to compress the file:",
+                options=["Low Compression", "Recommended", "Extreme Compression"],
+                value="Recommended",
+                help="Extreme compression results in a tiny file size but lower visual quality."
+            )
+            
+            # Map the user's choice to hidden resolution/quality math
+            if lossy_level == "Low Compression":
+                c_scale, c_qual = 1.5, 80
+            elif lossy_level == "Recommended":
+                c_scale, c_qual = 1.0, 60
+            else: # Extreme Compression
+                c_scale, c_qual = 0.6, 35
+
         comp_file = st.file_uploader("Upload heavy PDF", type="pdf", key="comp")
+        
         if comp_file and st.button("Optimize"):
             orig = comp_file.getvalue()
-            reader = PdfReader(io.BytesIO(orig))
-            writer = PdfWriter()
+            orig_size = len(orig)
             
-            for p in reader.pages: 
-                # FIX: Add target page tracking layer to writer first to generate editing authorization
-                new_page = writer.add_page(p)
-                # Compress content stream inside writer memory matrix safely
-                new_page.compress_content_streams()
+            with st.spinner("Compressing... This might take a moment for heavy files."):
+                if "Lossless" in comp_mode:
+                    doc = fitz.open(stream=orig, filetype="pdf")
+                    out = io.BytesIO()
+                    doc.save(out, garbage=4, deflate=True, clean=True)
+                    new_b = out.getvalue()
+                else:
+                    # Aggressive: Render pages as lower-res JPEGs based on the slider setting
+                    doc = fitz.open(stream=orig, filetype="pdf")
+                    imgs = []
+                    for page in doc:
+                        pix = page.get_pixmap(matrix=fitz.Matrix(c_scale, c_scale))
+                        imgs.append(pix.tobytes("jpeg", jpg_quality=c_qual))
+                    new_b = img2pdf.convert(imgs)
                 
-            out = io.BytesIO()
-            writer.write(out)
-            new_b = out.getvalue()
-            diff = ((len(orig)-len(new_b))/len(orig))*100
-            st.metric("Compressed Size", get_file_size(new_b), delta=f"-{diff:.1f}%")
-            st.download_button("Download Optimized PDF", new_b, "compressed.pdf")
+                new_size = len(new_b)
+                
+                if new_size < orig_size:
+                    diff = ((orig_size - new_size) / orig_size) * 100
+                    st.success("Compression successful!")
+                    st.metric("Compressed Size", get_file_size(new_b), delta=f"-{diff:.1f}%")
+                    st.download_button("Download Optimized PDF", new_b, "compressed.pdf")
+                else:
+                    st.warning("We couldn't shrink this file any further with the current settings.")
+                    st.metric("Original Size", get_file_size(orig))
 
     with col_tools[3]:
         st.header("Word to PDF")
